@@ -8,6 +8,7 @@ import io.github.ashwith.config.AgentConfig;
 import io.github.ashwith.context.Message;
 import io.github.ashwith.dto.ModelResponse;
 import io.github.ashwith.dto.ToolCall;
+import io.github.ashwith.dto.TokenUsage;
 import io.github.ashwith.tools.LLMTool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +21,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 public class OllamaModel implements Model {
 
@@ -40,7 +44,7 @@ public class OllamaModel implements Model {
     public ModelResponse invoke(List<Message> messages, Collection<LLMTool> tools) {
         log.info("Invoking Ollama '{}' — {} message(s), {} tool(s)", config.getModelName(), messages.size(), tools.size());
         try {
-            String body = mapper.writeValueAsString(buildRequest(messages, tools));
+            String body = mapper.writeValueAsString(buildRequest(messages, tools, false));
             log.debug("Request payload size: {} bytes", body.length());
 
             HttpRequest request = HttpRequest.newBuilder()
@@ -53,8 +57,8 @@ public class OllamaModel implements Model {
             log.debug("HTTP response status: {}", response.statusCode());
 
             ModelResponse result = parseResponse(response.body());
-            log.info("Ollama response — content length: {}, tool calls: {}",
-                    result.content().length(), result.toolCalls().size());
+            log.info("Ollama response — content: {} chars, tool calls: {}, tokens: {}",
+                    result.content().length(), result.toolCalls().size(), result.tokenUsage());
             return result;
         } catch (Exception e) {
             log.error("Ollama invocation failed: {}", e.getMessage(), e);
@@ -62,10 +66,35 @@ public class OllamaModel implements Model {
         }
     }
 
-    private ObjectNode buildRequest(List<Message> messages, Collection<LLMTool> tools) {
+    @Override
+    public ModelResponse invoke(List<Message> messages, Collection<LLMTool> tools, Consumer<String> onToken) {
+        log.info("Invoking Ollama '{}' streaming — {} message(s), {} tool(s)", config.getModelName(), messages.size(), tools.size());
+        try {
+            String body = mapper.writeValueAsString(buildRequest(messages, tools, true));
+
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(config.getBaseUrl() + "/api/chat"))
+                    .header("Content-Type", "application/json")
+                    .POST(HttpRequest.BodyPublishers.ofString(body))
+                    .build();
+
+            HttpResponse<Stream<String>> response = httpClient.send(request, HttpResponse.BodyHandlers.ofLines());
+            log.debug("HTTP streaming response status: {}", response.statusCode());
+
+            ModelResponse result = parseStreamingResponse(response.body(), onToken);
+            log.info("Ollama stream complete — content: {} chars, tool calls: {}, tokens: {}",
+                    result.content().length(), result.toolCalls().size(), result.tokenUsage());
+            return result;
+        } catch (Exception e) {
+            log.error("Ollama streaming invocation failed: {}", e.getMessage(), e);
+            throw new RuntimeException("Ollama streaming invocation failed: " + e.getMessage(), e);
+        }
+    }
+
+    private ObjectNode buildRequest(List<Message> messages, Collection<LLMTool> tools, boolean stream) {
         ObjectNode root = mapper.createObjectNode();
         root.put("model", config.getModelName());
-        root.put("stream", false);
+        root.put("stream", stream);
         root.putObject("options").put("temperature", config.getTemperature());
 
         var messagesArray = root.putArray("messages");
@@ -104,8 +133,51 @@ public class OllamaModel implements Model {
         JsonNode root = mapper.readTree(body);
         JsonNode message = root.get("message");
         String content = message.path("content").asText("");
-        List<ToolCall> toolCalls = new ArrayList<>();
+        List<ToolCall> toolCalls = parseToolCalls(message);
 
+        int promptTokens = root.path("prompt_eval_count").asInt(0);
+        int completionTokens = root.path("eval_count").asInt(0);
+        TokenUsage tokenUsage = new TokenUsage(promptTokens, completionTokens, promptTokens + completionTokens);
+
+        return new ModelResponse(content, toolCalls, tokenUsage);
+    }
+
+    private ModelResponse parseStreamingResponse(Stream<String> lines, Consumer<String> onToken) {
+        StringBuilder contentBuilder = new StringBuilder();
+        AtomicReference<List<ToolCall>> toolCallsRef = new AtomicReference<>(new ArrayList<>());
+        AtomicReference<TokenUsage> usageRef = new AtomicReference<>(TokenUsage.zero());
+
+        lines.filter(line -> !line.isBlank()).forEach(line -> {
+            try {
+                JsonNode chunk = mapper.readTree(line);
+                JsonNode message = chunk.path("message");
+
+                String token = message.path("content").asText("");
+                if (!token.isEmpty()) {
+                    contentBuilder.append(token);
+                    onToken.accept(token);
+                }
+
+                if (message.has("tool_calls")) {
+                    toolCallsRef.set(parseToolCalls(message));
+                }
+
+                if (chunk.path("done").asBoolean(false)) {
+                    int promptTokens = chunk.path("prompt_eval_count").asInt(0);
+                    int completionTokens = chunk.path("eval_count").asInt(0);
+                    usageRef.set(new TokenUsage(promptTokens, completionTokens, promptTokens + completionTokens));
+                    log.debug("Stream done — tokens: {}", usageRef.get());
+                }
+            } catch (Exception e) {
+                log.warn("Failed to parse streaming chunk: {}", line);
+            }
+        });
+
+        return new ModelResponse(contentBuilder.toString(), toolCallsRef.get(), usageRef.get());
+    }
+
+    private List<ToolCall> parseToolCalls(JsonNode message) throws Exception {
+        List<ToolCall> toolCalls = new ArrayList<>();
         if (message.has("tool_calls")) {
             for (JsonNode tc : message.get("tool_calls")) {
                 JsonNode fn = tc.get("function");
@@ -115,7 +187,6 @@ public class OllamaModel implements Model {
                 log.debug("Parsed tool call: {}({})", name, args);
             }
         }
-
-        return new ModelResponse(content, toolCalls);
+        return toolCalls;
     }
 }

@@ -8,6 +8,7 @@ import io.github.ashwith.config.AgentConfig;
 import io.github.ashwith.context.Message;
 import io.github.ashwith.dto.ModelResponse;
 import io.github.ashwith.dto.ToolCall;
+import io.github.ashwith.dto.TokenUsage;
 import io.github.ashwith.tools.LLMTool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +25,6 @@ import java.util.Map;
 public class OpenAiModel implements Model {
 
     private static final Logger log = LoggerFactory.getLogger(OpenAiModel.class);
-
     private static final String DEFAULT_BASE_URL = "https://api.openai.com";
 
     private final AgentConfig config;
@@ -56,8 +56,8 @@ public class OpenAiModel implements Model {
             log.debug("HTTP response status: {}", response.statusCode());
 
             ModelResponse result = parseResponse(response.body());
-            log.info("OpenAI response — content length: {}, tool calls: {}",
-                    result.content().length(), result.toolCalls().size());
+            log.info("OpenAI response — content: {} chars, tool calls: {}, tokens: {}",
+                    result.content().length(), result.toolCalls().size(), result.tokenUsage());
             return result;
         } catch (Exception e) {
             log.error("OpenAI invocation failed: {}", e.getMessage(), e);
@@ -108,6 +108,13 @@ public class OpenAiModel implements Model {
             }
         }
 
-        return new ModelResponse(content, toolCalls);
+        JsonNode usage = root.path("usage");
+        TokenUsage tokenUsage = new TokenUsage(
+                usage.path("prompt_tokens").asInt(0),
+                usage.path("completion_tokens").asInt(0),
+                usage.path("total_tokens").asInt(0)
+        );
+
+        return new ModelResponse(content, toolCalls, tokenUsage);
     }
 }

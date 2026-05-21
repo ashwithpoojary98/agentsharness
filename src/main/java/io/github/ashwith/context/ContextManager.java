@@ -8,6 +8,7 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class ContextManager {
 
@@ -16,6 +17,7 @@ public class ContextManager {
     private final String systemPrompt;
     private final int maxMessages;
     private final Deque<Message> history;
+    private final ReentrantLock lock = new ReentrantLock();
 
     public ContextManager(String systemPrompt, int maxMessages) {
         this.systemPrompt = systemPrompt;
@@ -25,39 +27,69 @@ public class ContextManager {
     }
 
     public void addUserMessage(String content) {
-        evictIfFull();
-        history.addLast(Message.user(content));
-        log.debug("Added USER message — history size: {}", history.size());
+        lock.lock();
+        try {
+            evictIfFull();
+            history.addLast(Message.user(content));
+            log.debug("Added USER message — history size: {}", history.size());
+        } finally {
+            lock.unlock();
+        }
     }
 
     public void addAssistantMessage(String content) {
-        history.addLast(Message.assistant(content));
-        log.debug("Added ASSISTANT message — history size: {}", history.size());
+        lock.lock();
+        try {
+            history.addLast(Message.assistant(content));
+            log.debug("Added ASSISTANT message — history size: {}", history.size());
+        } finally {
+            lock.unlock();
+        }
     }
 
     public void addAssistantToolCalls(List<ToolCall> toolCalls) {
-        history.addLast(Message.assistantWithToolCalls(toolCalls));
-        log.debug("Added ASSISTANT tool-call message ({} calls) — history size: {}", toolCalls.size(), history.size());
+        lock.lock();
+        try {
+            history.addLast(Message.assistantWithToolCalls(toolCalls));
+            log.debug("Added ASSISTANT tool-call message ({} calls) — history size: {}", toolCalls.size(), history.size());
+        } finally {
+            lock.unlock();
+        }
     }
 
     public void addToolResult(String toolName, String result) {
-        history.addLast(Message.tool(result));
-        log.debug("Added TOOL result for '{}' — history size: {}", toolName, history.size());
+        lock.lock();
+        try {
+            history.addLast(Message.tool(result));
+            log.debug("Added TOOL result for '{}' — history size: {}", toolName, history.size());
+        } finally {
+            lock.unlock();
+        }
     }
 
     public List<Message> getMessages() {
-        var messages = new ArrayList<Message>();
-        if (systemPrompt != null && !systemPrompt.isBlank()) {
-            messages.add(Message.system(systemPrompt));
+        lock.lock();
+        try {
+            var messages = new ArrayList<Message>();
+            if (systemPrompt != null && !systemPrompt.isBlank()) {
+                messages.add(Message.system(systemPrompt));
+            }
+            messages.addAll(history);
+            log.debug("Built context: {} message(s) (including system prompt)", messages.size());
+            return messages;
+        } finally {
+            lock.unlock();
         }
-        messages.addAll(history);
-        log.debug("Built context: {} message(s) (including system prompt)", messages.size());
-        return messages;
     }
 
     public void clear() {
-        history.clear();
-        log.info("Context cleared");
+        lock.lock();
+        try {
+            history.clear();
+            log.info("Context cleared");
+        } finally {
+            lock.unlock();
+        }
     }
 
     private void evictIfFull() {

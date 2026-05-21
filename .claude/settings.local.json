@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(curl -s http://localhost:11434/api/tags)",
-      "WebFetch(domain:www.anthropic.com)"
+      "WebFetch(domain:www.anthropic.com)",
+      "Bash(mvn compile *)"
     ]
   }
 }

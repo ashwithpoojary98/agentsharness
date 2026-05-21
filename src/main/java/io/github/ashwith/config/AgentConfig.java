@@ -52,6 +52,16 @@ public class AgentConfig {
         public Builder systemPrompt(String systemPrompt) { this.systemPrompt = systemPrompt; return this; }
         public Builder temperature(double temperature) { this.temperature = temperature; return this; }
 
-        public AgentConfig build() { return new AgentConfig(this); }
+        public AgentConfig build() {
+            if (apiKey.isBlank()) {
+                String envKey = switch (modelType) {
+                    case GEMINI -> System.getenv("GEMINI_API_KEY");
+                    case OPENAI -> System.getenv("OPENAI_API_KEY");
+                    default -> null;
+                };
+                if (envKey != null && !envKey.isBlank()) this.apiKey = envKey;
+            }
+            return new AgentConfig(this);
+        }
     }
 }
