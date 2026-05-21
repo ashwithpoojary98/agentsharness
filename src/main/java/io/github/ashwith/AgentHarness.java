@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class AgentHarness {
 
@@ -31,6 +32,10 @@ public class AgentHarness {
 
     public AgentResponse run(String userInput) {
         return agentLoop.run(new AgentRequest(userInput));
+    }
+
+    public AgentResponse run(String userInput, Consumer<String> onToken) {
+        return agentLoop.run(new AgentRequest(userInput), onToken);
     }
 
     public static Builder builder() {

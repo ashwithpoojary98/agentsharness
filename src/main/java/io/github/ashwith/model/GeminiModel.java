@@ -8,6 +8,7 @@ import io.github.ashwith.config.AgentConfig;
 import io.github.ashwith.context.Message;
 import io.github.ashwith.dto.ModelResponse;
 import io.github.ashwith.dto.ToolCall;
+import io.github.ashwith.dto.TokenUsage;
 import io.github.ashwith.tools.LLMTool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +25,6 @@ import java.util.Map;
 public class GeminiModel implements Model {
 
     private static final Logger log = LoggerFactory.getLogger(GeminiModel.class);
-
     private static final String API_BASE = "https://generativelanguage.googleapis.com/v1beta/models/";
 
     private final AgentConfig config;
@@ -55,8 +55,8 @@ public class GeminiModel implements Model {
             log.debug("HTTP response status: {}", response.statusCode());
 
             ModelResponse result = parseResponse(response.body());
-            log.info("Gemini response — content length: {}, tool calls: {}",
-                    result.content().length(), result.toolCalls().size());
+            log.info("Gemini response — content: {} chars, tool calls: {}, tokens: {}",
+                    result.content().length(), result.toolCalls().size(), result.tokenUsage());
             return result;
         } catch (Exception e) {
             log.error("Gemini invocation failed: {}", e.getMessage(), e);
@@ -78,8 +78,7 @@ public class GeminiModel implements Model {
             if ("system".equals(msg.role())) continue;
             var contentNode = contentsArray.addObject();
             contentNode.put("role", "user".equals(msg.role()) ? "user" : "model");
-            var partsArray = contentNode.putArray("parts");
-            partsArray.addObject().put("text", msg.content());
+            contentNode.putArray("parts").addObject().put("text", msg.content());
         }
 
         if (!tools.isEmpty()) {
@@ -113,6 +112,13 @@ public class GeminiModel implements Model {
             }
         }
 
-        return new ModelResponse(content, toolCalls);
+        JsonNode usage = root.path("usageMetadata");
+        TokenUsage tokenUsage = new TokenUsage(
+                usage.path("promptTokenCount").asInt(0),
+                usage.path("candidatesTokenCount").asInt(0),
+                usage.path("totalTokenCount").asInt(0)
+        );
+
+        return new ModelResponse(content, toolCalls, tokenUsage);
     }
 }

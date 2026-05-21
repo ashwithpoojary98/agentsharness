@@ -286,3 +286,196 @@
 2026-05-21 22:36:39.916 INFO  i.github.ashwith.model.OllamaModel  Ollama response — content length: 275, tool calls: 0
 2026-05-21 22:36:39.916 INFO  io.github.ashwith.AgentLoop         Model returned final response (275 chars) — no tool calls
 2026-05-21 22:36:39.917 DEBUG i.g.ashwith.context.ContextManager  Added ASSISTANT message — history size: 8
+2026-05-21 23:16:47.137 DEBUG i.g.a.g.InputLengthGuardrail        Configured with maxLength=1000
+2026-05-21 23:16:47.140 DEBUG i.g.a.guardrail.BlocklistGuardrail  Configured with 4 blocked term(s): [hack, malware, exploit, injection]
+2026-05-21 23:16:47.142 DEBUG i.g.a.guardrail.RateLimitGuardrail  Configured: max 10 requests per 60s
+2026-05-21 23:16:47.146 DEBUG i.g.ashwith.guardrail.PiiGuardrail  Configured with action=MASK
+2026-05-21 23:16:47.278 INFO  i.github.ashwith.tools.ToolRegistry Registered tool: 'get_weather'
+2026-05-21 23:16:47.280 INFO  io.github.ashwith.AgentHarness      Building AgentHarness — model=mistral:latest (OLLAMA), guardrails=5, tools=[get_weather]
+2026-05-21 23:16:47.776 INFO  i.github.ashwith.model.OllamaModel  OllamaModel initialized — endpoint: http://localhost:11434, model: mistral:latest
+2026-05-21 23:16:47.777 DEBUG i.g.ashwith.context.ContextManager  Initialized with maxMessages=20
+2026-05-21 23:16:47.782 INFO  io.github.ashwith.AgentHarness      AgentHarness ready
+2026-05-21 23:16:47.784 INFO  io.github.ashwith.AgentLoop         ──── Agent run started ────────────────────────────
+2026-05-21 23:16:47.784 INFO  io.github.ashwith.AgentLoop         Input : 'hello'
+2026-05-21 23:16:47.784 DEBUG i.g.a.guardrail.GuardrailChain      Running 5 guardrail(s)
+2026-05-21 23:16:47.784 DEBUG i.g.a.guardrail.GuardrailChain      Checking guardrail: InputLengthGuardrail
+2026-05-21 23:16:47.784 DEBUG i.g.a.g.InputLengthGuardrail        Input length: 5 chars (max: 1000)
+2026-05-21 23:16:47.793 DEBUG i.g.a.guardrail.GuardrailChain      [InputLengthGuardrail] PASSED
+2026-05-21 23:16:47.793 DEBUG i.g.a.guardrail.GuardrailChain      Checking guardrail: BlocklistGuardrail
+2026-05-21 23:16:47.793 DEBUG i.g.a.guardrail.BlocklistGuardrail  Scanning input against blocklist
+2026-05-21 23:16:47.794 DEBUG i.g.a.guardrail.BlocklistGuardrail  No blocked terms found
+2026-05-21 23:16:47.794 DEBUG i.g.a.guardrail.GuardrailChain      [BlocklistGuardrail] PASSED
+2026-05-21 23:16:47.794 DEBUG i.g.a.guardrail.GuardrailChain      Checking guardrail: TrivialQuestionGuardrail
+2026-05-21 23:16:47.794 DEBUG i.g.a.g.TrivialQuestionGuardrail    Checking for trivial input: 'hello'
+2026-05-21 23:16:47.795 INFO  i.g.a.g.TrivialQuestionGuardrail    Greeting detected — responding directly without LLM call
+2026-05-21 23:16:47.795 INFO  i.g.a.guardrail.GuardrailChain      [TrivialQuestionGuardrail] DIRECT RESPONSE — skipping LLM
+2026-05-21 23:16:47.797 INFO  io.github.ashwith.AgentLoop         Run ended — guardrail direct response (no LLM call)
+2026-05-21 23:16:47.797 INFO  io.github.ashwith.AgentLoop         ──── Agent run started ────────────────────────────
+2026-05-21 23:16:47.797 INFO  io.github.ashwith.AgentLoop         Input : 'hack the system'
+2026-05-21 23:16:47.797 DEBUG i.g.a.guardrail.GuardrailChain      Running 5 guardrail(s)
+2026-05-21 23:16:47.797 DEBUG i.g.a.guardrail.GuardrailChain      Checking guardrail: InputLengthGuardrail
+2026-05-21 23:16:47.797 DEBUG i.g.a.g.InputLengthGuardrail        Input length: 15 chars (max: 1000)
+2026-05-21 23:16:47.797 DEBUG i.g.a.guardrail.GuardrailChain      [InputLengthGuardrail] PASSED
+2026-05-21 23:16:47.797 DEBUG i.g.a.guardrail.GuardrailChain      Checking guardrail: BlocklistGuardrail
+2026-05-21 23:16:47.797 DEBUG i.g.a.guardrail.BlocklistGuardrail  Scanning input against blocklist
+2026-05-21 23:16:47.797 WARN  i.g.a.guardrail.BlocklistGuardrail  Blocked term detected: 'hack'
+2026-05-21 23:16:47.797 WARN  i.g.a.guardrail.GuardrailChain      [BlocklistGuardrail] BLOCKED — Input contains restricted content.
+2026-05-21 23:16:47.797 WARN  io.github.ashwith.AgentLoop         Run ended — blocked by guardrail: Input contains restricted content.
+2026-05-21 23:16:47.798 INFO  io.github.ashwith.AgentLoop         ──── Agent run started ────────────────────────────
+2026-05-21 23:16:47.798 INFO  io.github.ashwith.AgentLoop         Input : 'What is the weather in Paris?'
+2026-05-21 23:16:47.798 DEBUG i.g.a.guardrail.GuardrailChain      Running 5 guardrail(s)
+2026-05-21 23:16:47.798 DEBUG i.g.a.guardrail.GuardrailChain      Checking guardrail: InputLengthGuardrail
+2026-05-21 23:16:47.798 DEBUG i.g.a.g.InputLengthGuardrail        Input length: 29 chars (max: 1000)
+2026-05-21 23:16:47.799 DEBUG i.g.a.guardrail.GuardrailChain      [InputLengthGuardrail] PASSED
+2026-05-21 23:16:47.799 DEBUG i.g.a.guardrail.GuardrailChain      Checking guardrail: BlocklistGuardrail
+2026-05-21 23:16:47.799 DEBUG i.g.a.guardrail.BlocklistGuardrail  Scanning input against blocklist
+2026-05-21 23:16:47.799 DEBUG i.g.a.guardrail.BlocklistGuardrail  No blocked terms found
+2026-05-21 23:16:47.799 DEBUG i.g.a.guardrail.GuardrailChain      [BlocklistGuardrail] PASSED
+2026-05-21 23:16:47.799 DEBUG i.g.a.guardrail.GuardrailChain      Checking guardrail: TrivialQuestionGuardrail
+2026-05-21 23:16:47.799 DEBUG i.g.a.g.TrivialQuestionGuardrail    Checking for trivial input: 'what is the weather in paris?'
+2026-05-21 23:16:47.799 DEBUG i.g.a.g.TrivialQuestionGuardrail    Input is non-trivial — passing through
+2026-05-21 23:16:47.799 DEBUG i.g.a.guardrail.GuardrailChain      [TrivialQuestionGuardrail] PASSED
+2026-05-21 23:16:47.799 DEBUG i.g.a.guardrail.GuardrailChain      Checking guardrail: RateLimitGuardrail
+2026-05-21 23:16:47.800 DEBUG i.g.a.guardrail.RateLimitGuardrail  Rate check: 0/10 requests in window
+2026-05-21 23:16:47.800 DEBUG i.g.a.guardrail.GuardrailChain      [RateLimitGuardrail] PASSED
+2026-05-21 23:16:47.800 DEBUG i.g.a.guardrail.GuardrailChain      Checking guardrail: PiiGuardrail
+2026-05-21 23:16:47.800 DEBUG i.g.ashwith.guardrail.PiiGuardrail  No PII detected
+2026-05-21 23:16:47.800 DEBUG i.g.a.guardrail.GuardrailChain      [PiiGuardrail] PASSED
+2026-05-21 23:16:47.800 DEBUG i.g.a.guardrail.GuardrailChain      All guardrails passed — proceeding to model
+2026-05-21 23:16:47.801 DEBUG i.g.ashwith.context.ContextManager  Added USER message — history size: 1
+2026-05-21 23:16:47.802 DEBUG io.github.ashwith.AgentLoop         Available tools: [get_weather]
+2026-05-21 23:16:47.802 INFO  io.github.ashwith.AgentLoop         Iteration [1/5] — invoking model
+2026-05-21 23:16:47.802 DEBUG i.g.ashwith.context.ContextManager  Built context: 2 message(s) (including system prompt)
+2026-05-21 23:16:47.802 INFO  i.github.ashwith.model.OllamaModel  Invoking Ollama 'mistral:latest' streaming — 2 message(s), 1 tool(s)
+2026-05-21 23:17:14.308 DEBUG i.github.ashwith.model.OllamaModel  HTTP streaming response status: 200
+2026-05-21 23:17:14.338 DEBUG i.github.ashwith.model.OllamaModel  Parsed tool call: get_weather({city=Paris})
+2026-05-21 23:17:18.212 DEBUG i.github.ashwith.model.OllamaModel  Stream done — tokens: prompt=112 completion=46 total=158
+2026-05-21 23:17:18.221 INFO  i.github.ashwith.model.OllamaModel  Ollama stream complete — content: 0 chars, tool calls: 1, tokens: prompt=112 completion=46 total=158
+2026-05-21 23:17:18.222 INFO  io.github.ashwith.AgentLoop         Model requested 1 tool call(s): [get_weather]
+2026-05-21 23:17:18.222 DEBUG i.g.ashwith.context.ContextManager  Added ASSISTANT tool-call message (1 calls) — history size: 2
+2026-05-21 23:17:18.223 DEBUG io.github.ashwith.AgentLoop         Dispatching tool 'get_weather' with args: {city=Paris}
+2026-05-21 23:17:18.223 DEBUG i.github.ashwith.tools.ToolRegistry Looking up tool: 'get_weather'
+2026-05-21 23:17:18.223 INFO  i.github.ashwith.tools.ToolExecutor Executing tool 'get_weather' — args: {city=Paris}
+2026-05-21 23:17:18.225 INFO  i.github.ashwith.tools.ToolExecutor Tool 'get_weather' succeeded on attempt 1/2
+2026-05-21 23:17:18.225 DEBUG i.github.ashwith.tools.ToolExecutor Tool 'get_weather' result: {"city":"paris","temperature":"18°C","condition":"Partly Cloudy","humidity":"65%","wind":"8 km/h SW"}
+2026-05-21 23:17:18.226 DEBUG io.github.ashwith.AgentLoop         Tool 'get_weather' result [success=true]: {"city":"paris","temperature":"18°C","condition":"Partly Cloudy","humidity":"65%","wind":"8 km/h SW"}
+2026-05-21 23:17:18.226 DEBUG i.g.ashwith.context.ContextManager  Added TOOL result for 'get_weather' — history size: 3
+2026-05-21 23:17:18.226 INFO  io.github.ashwith.AgentLoop         Iteration [2/5] — invoking model
+2026-05-21 23:17:18.226 DEBUG i.g.ashwith.context.ContextManager  Built context: 4 message(s) (including system prompt)
+2026-05-21 23:17:18.226 INFO  i.github.ashwith.model.OllamaModel  Invoking Ollama 'mistral:latest' streaming — 4 message(s), 1 tool(s)
+2026-05-21 23:17:26.378 DEBUG i.github.ashwith.model.OllamaModel  HTTP streaming response status: 200
+2026-05-21 23:17:32.354 DEBUG i.github.ashwith.model.OllamaModel  Stream done — tokens: prompt=79 completion=40 total=119
+2026-05-21 23:17:32.354 INFO  i.github.ashwith.model.OllamaModel  Ollama stream complete — content: 121 chars, tool calls: 0, tokens: prompt=79 completion=40 total=119
+2026-05-21 23:17:32.354 INFO  io.github.ashwith.AgentLoop         Model returned final response (121 chars) — tokens this run: prompt=191 completion=86 total=277
+2026-05-21 23:17:32.354 DEBUG i.g.ashwith.context.ContextManager  Added ASSISTANT message — history size: 4
+2026-05-21 23:17:32.356 INFO  io.github.ashwith.AgentLoop         ──── Agent run started ────────────────────────────
+2026-05-21 23:17:32.356 INFO  io.github.ashwith.AgentLoop         Input : 'Compare the weather in London and Tokyo'
+2026-05-21 23:17:32.356 DEBUG i.g.a.guardrail.GuardrailChain      Running 5 guardrail(s)
+2026-05-21 23:17:32.356 DEBUG i.g.a.guardrail.GuardrailChain      Checking guardrail: InputLengthGuardrail
+2026-05-21 23:17:32.356 DEBUG i.g.a.g.InputLengthGuardrail        Input length: 39 chars (max: 1000)
+2026-05-21 23:17:32.356 DEBUG i.g.a.guardrail.GuardrailChain      [InputLengthGuardrail] PASSED
+2026-05-21 23:17:32.356 DEBUG i.g.a.guardrail.GuardrailChain      Checking guardrail: BlocklistGuardrail
+2026-05-21 23:17:32.356 DEBUG i.g.a.guardrail.BlocklistGuardrail  Scanning input against blocklist
+2026-05-21 23:17:32.356 DEBUG i.g.a.guardrail.BlocklistGuardrail  No blocked terms found
+2026-05-21 23:17:32.356 DEBUG i.g.a.guardrail.GuardrailChain      [BlocklistGuardrail] PASSED
+2026-05-21 23:17:32.357 DEBUG i.g.a.guardrail.GuardrailChain      Checking guardrail: TrivialQuestionGuardrail
+2026-05-21 23:17:32.357 DEBUG i.g.a.g.TrivialQuestionGuardrail    Checking for trivial input: 'compare the weather in london and tokyo'
+2026-05-21 23:17:32.357 DEBUG i.g.a.g.TrivialQuestionGuardrail    Input is non-trivial — passing through
+2026-05-21 23:17:32.357 DEBUG i.g.a.guardrail.GuardrailChain      [TrivialQuestionGuardrail] PASSED
+2026-05-21 23:17:32.357 DEBUG i.g.a.guardrail.GuardrailChain      Checking guardrail: RateLimitGuardrail
+2026-05-21 23:17:32.357 DEBUG i.g.a.guardrail.RateLimitGuardrail  Rate check: 1/10 requests in window
+2026-05-21 23:17:32.357 DEBUG i.g.a.guardrail.GuardrailChain      [RateLimitGuardrail] PASSED
+2026-05-21 23:17:32.357 DEBUG i.g.a.guardrail.GuardrailChain      Checking guardrail: PiiGuardrail
+2026-05-21 23:17:32.359 DEBUG i.g.ashwith.guardrail.PiiGuardrail  No PII detected
+2026-05-21 23:17:32.359 DEBUG i.g.a.guardrail.GuardrailChain      [PiiGuardrail] PASSED
+2026-05-21 23:17:32.359 DEBUG i.g.a.guardrail.GuardrailChain      All guardrails passed — proceeding to model
+2026-05-21 23:17:32.359 DEBUG i.g.ashwith.context.ContextManager  Added USER message — history size: 5
+2026-05-21 23:17:32.359 DEBUG io.github.ashwith.AgentLoop         Available tools: [get_weather]
+2026-05-21 23:17:32.359 INFO  io.github.ashwith.AgentLoop         Iteration [1/5] — invoking model
+2026-05-21 23:17:32.359 DEBUG i.g.ashwith.context.ContextManager  Built context: 6 message(s) (including system prompt)
+2026-05-21 23:17:32.359 INFO  i.github.ashwith.model.OllamaModel  Invoking Ollama 'mistral:latest' streaming — 6 message(s), 1 tool(s)
+2026-05-21 23:17:51.342 DEBUG i.github.ashwith.model.OllamaModel  HTTP streaming response status: 200
+2026-05-21 23:17:51.343 DEBUG i.github.ashwith.model.OllamaModel  Parsed tool call: get_weather({city=London})
+2026-05-21 23:17:54.483 DEBUG i.github.ashwith.model.OllamaModel  Parsed tool call: get_weather({city=Tokyo})
+2026-05-21 23:17:54.785 DEBUG i.github.ashwith.model.OllamaModel  Stream done — tokens: prompt=231 completion=43 total=274
+2026-05-21 23:17:54.785 INFO  i.github.ashwith.model.OllamaModel  Ollama stream complete — content: 0 chars, tool calls: 1, tokens: prompt=231 completion=43 total=274
+2026-05-21 23:17:54.785 INFO  io.github.ashwith.AgentLoop         Model requested 1 tool call(s): [get_weather]
+2026-05-21 23:17:54.785 DEBUG i.g.ashwith.context.ContextManager  Added ASSISTANT tool-call message (1 calls) — history size: 6
+2026-05-21 23:17:54.786 DEBUG io.github.ashwith.AgentLoop         Dispatching tool 'get_weather' with args: {city=Tokyo}
+2026-05-21 23:17:54.786 DEBUG i.github.ashwith.tools.ToolRegistry Looking up tool: 'get_weather'
+2026-05-21 23:17:54.786 INFO  i.github.ashwith.tools.ToolExecutor Executing tool 'get_weather' — args: {city=Tokyo}
+2026-05-21 23:17:54.786 INFO  i.github.ashwith.tools.ToolExecutor Tool 'get_weather' succeeded on attempt 1/2
+2026-05-21 23:17:54.786 DEBUG i.github.ashwith.tools.ToolExecutor Tool 'get_weather' result: {"city":"tokyo","temperature":"26°C","condition":"Clear","humidity":"70%","wind":"5 km/h SE"}
+2026-05-21 23:17:54.786 DEBUG io.github.ashwith.AgentLoop         Tool 'get_weather' result [success=true]: {"city":"tokyo","temperature":"26°C","condition":"Clear","humidity":"70%","wind":"5 km/h SE"}
+2026-05-21 23:17:54.786 DEBUG i.g.ashwith.context.ContextManager  Added TOOL result for 'get_weather' — history size: 7
+2026-05-21 23:17:54.786 INFO  io.github.ashwith.AgentLoop         Iteration [2/5] — invoking model
+2026-05-21 23:17:54.786 DEBUG i.g.ashwith.context.ContextManager  Built context: 8 message(s) (including system prompt)
+2026-05-21 23:17:54.786 INFO  i.github.ashwith.model.OllamaModel  Invoking Ollama 'mistral:latest' streaming — 8 message(s), 1 tool(s)
+2026-05-21 23:18:02.956 DEBUG i.github.ashwith.model.OllamaModel  HTTP streaming response status: 200
+2026-05-21 23:18:17.173 DEBUG i.github.ashwith.model.OllamaModel  Stream done — tokens: prompt=196 completion=89 total=285
+2026-05-21 23:18:17.173 INFO  i.github.ashwith.model.OllamaModel  Ollama stream complete — content: 345 chars, tool calls: 0, tokens: prompt=196 completion=89 total=285
+2026-05-21 23:18:17.173 INFO  io.github.ashwith.AgentLoop         Model returned final response (345 chars) — tokens this run: prompt=427 completion=132 total=559
+2026-05-21 23:18:17.173 DEBUG i.g.ashwith.context.ContextManager  Added ASSISTANT message — history size: 8
+2026-05-21 23:18:17.174 INFO  io.github.ashwith.AgentLoop         ──── Agent run started ────────────────────────────
+2026-05-21 23:18:17.174 INFO  io.github.ashwith.AgentLoop         Input : 'What is the capital of France?'
+2026-05-21 23:18:17.174 DEBUG i.g.a.guardrail.GuardrailChain      Running 5 guardrail(s)
+2026-05-21 23:18:17.174 DEBUG i.g.a.guardrail.GuardrailChain      Checking guardrail: InputLengthGuardrail
+2026-05-21 23:18:17.174 DEBUG i.g.a.g.InputLengthGuardrail        Input length: 30 chars (max: 1000)
+2026-05-21 23:18:17.174 DEBUG i.g.a.guardrail.GuardrailChain      [InputLengthGuardrail] PASSED
+2026-05-21 23:18:17.174 DEBUG i.g.a.guardrail.GuardrailChain      Checking guardrail: BlocklistGuardrail
+2026-05-21 23:18:17.175 DEBUG i.g.a.guardrail.BlocklistGuardrail  Scanning input against blocklist
+2026-05-21 23:18:17.175 DEBUG i.g.a.guardrail.BlocklistGuardrail  No blocked terms found
+2026-05-21 23:18:17.175 DEBUG i.g.a.guardrail.GuardrailChain      [BlocklistGuardrail] PASSED
+2026-05-21 23:18:17.175 DEBUG i.g.a.guardrail.GuardrailChain      Checking guardrail: TrivialQuestionGuardrail
+2026-05-21 23:18:17.175 DEBUG i.g.a.g.TrivialQuestionGuardrail    Checking for trivial input: 'what is the capital of france?'
+2026-05-21 23:18:17.175 DEBUG i.g.a.g.TrivialQuestionGuardrail    Input is non-trivial — passing through
+2026-05-21 23:18:17.175 DEBUG i.g.a.guardrail.GuardrailChain      [TrivialQuestionGuardrail] PASSED
+2026-05-21 23:18:17.175 DEBUG i.g.a.guardrail.GuardrailChain      Checking guardrail: RateLimitGuardrail
+2026-05-21 23:18:17.175 DEBUG i.g.a.guardrail.RateLimitGuardrail  Rate check: 1/10 requests in window
+2026-05-21 23:18:17.175 DEBUG i.g.a.guardrail.GuardrailChain      [RateLimitGuardrail] PASSED
+2026-05-21 23:18:17.175 DEBUG i.g.a.guardrail.GuardrailChain      Checking guardrail: PiiGuardrail
+2026-05-21 23:18:17.176 DEBUG i.g.ashwith.guardrail.PiiGuardrail  No PII detected
+2026-05-21 23:18:17.176 DEBUG i.g.a.guardrail.GuardrailChain      [PiiGuardrail] PASSED
+2026-05-21 23:18:17.176 DEBUG i.g.a.guardrail.GuardrailChain      All guardrails passed — proceeding to model
+2026-05-21 23:18:17.176 DEBUG i.g.ashwith.context.ContextManager  Added USER message — history size: 9
+2026-05-21 23:18:17.176 DEBUG io.github.ashwith.AgentLoop         Available tools: [get_weather]
+2026-05-21 23:18:17.176 INFO  io.github.ashwith.AgentLoop         Iteration [1/5] — invoking model
+2026-05-21 23:18:17.176 DEBUG i.g.ashwith.context.ContextManager  Built context: 10 message(s) (including system prompt)
+2026-05-21 23:18:17.176 INFO  i.github.ashwith.model.OllamaModel  Invoking Ollama 'mistral:latest' streaming — 10 message(s), 1 tool(s)
+2026-05-21 23:18:40.142 DEBUG i.github.ashwith.model.OllamaModel  HTTP streaming response status: 200
+2026-05-21 23:18:43.335 DEBUG i.github.ashwith.model.OllamaModel  Stream done — tokens: prompt=397 completion=24 total=421
+2026-05-21 23:18:43.335 INFO  i.github.ashwith.model.OllamaModel  Ollama stream complete — content: 70 chars, tool calls: 0, tokens: prompt=397 completion=24 total=421
+2026-05-21 23:18:43.335 INFO  io.github.ashwith.AgentLoop         Model returned final response (70 chars) — tokens this run: prompt=397 completion=24 total=421
+2026-05-21 23:18:43.335 DEBUG i.g.ashwith.context.ContextManager  Added ASSISTANT message — history size: 10
+2026-05-21 23:18:43.335 INFO  io.github.ashwith.AgentLoop         ──── Agent run started ────────────────────────────
+2026-05-21 23:18:43.335 INFO  io.github.ashwith.AgentLoop         Input : 'My email is user@example.com, what is the weather in Berlin?'
+2026-05-21 23:18:43.335 DEBUG i.g.a.guardrail.GuardrailChain      Running 5 guardrail(s)
+2026-05-21 23:18:43.336 DEBUG i.g.a.guardrail.GuardrailChain      Checking guardrail: InputLengthGuardrail
+2026-05-21 23:18:43.336 DEBUG i.g.a.g.InputLengthGuardrail        Input length: 60 chars (max: 1000)
+2026-05-21 23:18:43.336 DEBUG i.g.a.guardrail.GuardrailChain      [InputLengthGuardrail] PASSED
+2026-05-21 23:18:43.336 DEBUG i.g.a.guardrail.GuardrailChain      Checking guardrail: BlocklistGuardrail
+2026-05-21 23:18:43.336 DEBUG i.g.a.guardrail.BlocklistGuardrail  Scanning input against blocklist
+2026-05-21 23:18:43.336 DEBUG i.g.a.guardrail.BlocklistGuardrail  No blocked terms found
+2026-05-21 23:18:43.336 DEBUG i.g.a.guardrail.GuardrailChain      [BlocklistGuardrail] PASSED
+2026-05-21 23:18:43.336 DEBUG i.g.a.guardrail.GuardrailChain      Checking guardrail: TrivialQuestionGuardrail
+2026-05-21 23:18:43.336 DEBUG i.g.a.g.TrivialQuestionGuardrail    Checking for trivial input: 'my email is user@example.com, what is the weather in berlin?'
+2026-05-21 23:18:43.336 DEBUG i.g.a.g.TrivialQuestionGuardrail    Input is non-trivial — passing through
+2026-05-21 23:18:43.336 DEBUG i.g.a.guardrail.GuardrailChain      [TrivialQuestionGuardrail] PASSED
+2026-05-21 23:18:43.336 DEBUG i.g.a.guardrail.GuardrailChain      Checking guardrail: RateLimitGuardrail
+2026-05-21 23:18:43.336 DEBUG i.g.a.guardrail.RateLimitGuardrail  Rate check: 1/10 requests in window
+2026-05-21 23:18:43.336 DEBUG i.g.a.guardrail.GuardrailChain      [RateLimitGuardrail] PASSED
+2026-05-21 23:18:43.337 DEBUG i.g.a.guardrail.GuardrailChain      Checking guardrail: PiiGuardrail
+2026-05-21 23:18:43.337 WARN  i.g.ashwith.guardrail.PiiGuardrail  PII detected: type=email
+2026-05-21 23:18:43.337 INFO  i.g.ashwith.guardrail.PiiGuardrail  PII masked: type=email → passing sanitised input
+2026-05-21 23:18:43.337 DEBUG i.g.a.guardrail.GuardrailChain      [PiiGuardrail] PASSED
+2026-05-21 23:18:43.337 DEBUG i.g.a.guardrail.GuardrailChain      All guardrails passed — proceeding to model
+2026-05-21 23:18:43.337 DEBUG i.g.ashwith.context.ContextManager  Added USER message — history size: 11
+2026-05-21 23:18:43.337 DEBUG io.github.ashwith.AgentLoop         Available tools: [get_weather]
+2026-05-21 23:18:43.337 INFO  io.github.ashwith.AgentLoop         Iteration [1/5] — invoking model
+2026-05-21 23:18:43.337 DEBUG i.g.ashwith.context.ContextManager  Built context: 12 message(s) (including system prompt)
+2026-05-21 23:18:43.337 INFO  i.github.ashwith.model.OllamaModel  Invoking Ollama 'mistral:latest' streaming — 12 message(s), 1 tool(s)
+2026-05-21 23:19:01.303 DEBUG i.github.ashwith.model.OllamaModel  HTTP streaming response status: 200
+2026-05-21 23:19:04.523 DEBUG i.github.ashwith.model.OllamaModel  Stream done — tokens: prompt=440 completion=24 total=464
+2026-05-21 23:19:04.523 INFO  i.github.ashwith.model.OllamaModel  Ollama stream complete — content: 71 chars, tool calls: 0, tokens: prompt=440 completion=24 total=464
+2026-05-21 23:19:04.523 INFO  io.github.ashwith.AgentLoop         Model returned final response (71 chars) — tokens this run: prompt=440 completion=24 total=464
+2026-05-21 23:19:04.523 DEBUG i.g.ashwith.context.ContextManager  Added ASSISTANT message — history size: 12

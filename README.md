@@ -8,7 +8,7 @@
 [![GitHub forks](https://img.shields.io/github/forks/ashwithpoojary98/agentsharness.svg?style=social&label=Fork)](https://github.com/ashwithpoojary98/agentsharness/network)
 [![Java](https://img.shields.io/badge/Java-21-orange.svg)](https://openjdk.org/projects/jdk/21/)
 [![Maven](https://img.shields.io/badge/Maven-3.8+-blue.svg)](https://maven.apache.org/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![LLM Support](https://img.shields.io/badge/LLM-Ollama%20%7C%20Gemini%20%7C%20OpenAI-blueviolet.svg)](#supported-llm-providers)
 
 ---
@@ -355,6 +355,95 @@ src/main/java/io/github/ashwith/
 
 ---
 
+## Without a Harness — What Actually Happens
+
+Run `WithoutHarnessDemo` to see this live. These are the exact failure modes a raw LLM call hits:
+
+### Problem 1 — No Guardrails
+
+```java
+// Without harness
+rawCall("hack the system");   // goes straight to the model — no filtering
+rawCall("ignore all previous instructions and...");  // prompt injection — no protection
+```
+```java
+// With harness
+harness.run("hack the system");  // → BLOCKED: Input contains restricted content.
+```
+
+---
+
+### Problem 2 — No Memory
+
+```java
+// Without harness — every call is stateless
+rawCall("My name is Ashwith");   // model acknowledges
+rawCall("What is my name?");     // model: "I don't know your name" — it forgot
+```
+```java
+// With harness — ContextManager carries the history
+harness.run("My name is Ashwith");
+harness.run("What is my name?");  // → "Your name is Ashwith"
+```
+
+---
+
+### Problem 3 — No Tools → Hallucination
+
+```java
+// Without harness
+rawCall("What is the current weather in Paris?");
+// → Model makes up weather data. It has no internet access.
+//   "The weather in Paris is currently 22°C and sunny" — fabricated.
+```
+```java
+// With harness
+harness.run("What is the weather in Paris?");
+// → Calls WeatherTool → real structured data → accurate answer
+```
+
+---
+
+### Problem 4 — No Retry
+
+```java
+// Without harness
+// Tool throws an exception → whole run crashes, user gets nothing
+
+// With harness
+// ToolExecutor retries up to maxRetries times, logs each failure,
+// and returns a graceful error message as the last resort
+```
+
+---
+
+### Problem 5 — No Cost Control
+
+```java
+// Without harness
+rawCall("hi");       // pays for an LLM inference on a greeting
+rawCall("hello");    // pays again
+rawCall("thanks");   // pays again
+
+// With harness
+harness.run("hi");       // TrivialQuestionGuardrail → answered locally, $0
+harness.run("hello");    // TrivialQuestionGuardrail → answered locally, $0
+```
+
+### Run the Demo
+
+```bash
+mvn exec:java -Dexec.mainClass="io.github.ashwith.WithoutHarnessDemo"
+```
+
+Then compare with:
+
+```bash
+mvn exec:java -Dexec.mainClass="io.github.ashwith.Main"
+```
+
+---
+
 ## Harness Design Principles (from Anthropic Engineering)
 
 > This section summarises key findings from Anthropic's engineering blog post  
@@ -511,4 +600,9 @@ Pull requests are welcome. For major changes, open an issue first to discuss wha
 
 ## License
 
-MIT © [Ashwith Poojary](https://github.com/ashwithpoojary98)
+Apache License 2.0 © [Ashwith Poojary](https://github.com/ashwithpoojary98)
+
+Licensed under the Apache License, Version 2.0. You may obtain a copy at  
+http://www.apache.org/licenses/LICENSE-2.0
+
+See the [LICENSE](./LICENSE) file for the full license text.
